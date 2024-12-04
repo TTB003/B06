@@ -5,29 +5,34 @@ const data = [
     { name: "Peony", url: "page/product/sang/peony.html" },
     { name: "Simple", url: "page/product/re/simple.html" }
 ];
-function showSuggestions() {
-    const query = document.getElementById("searchInput").value.trim().toLowerCase();
-    const suggestionsContainer = document.getElementById("suggestions");
-    suggestionsContainer.innerHTML = "";
-    if (query) {
-        const suggestions = data.filter(item => item.name.toLowerCase().includes(query));
-        if (suggestions.length > 0) {
-            suggestions.forEach(item => {
-                const suggestionItem = document.createElement("div");
-                suggestionItem.classList.add("suggestion-item");
-                suggestionItem.innerHTML = `<a href="${item.url}" target="_blank">${item.name}</a>`;
-                suggestionsContainer.appendChild(suggestionItem);
-            });
-            suggestionsContainer.style.display = "block"; 
+
+// Thêm sự kiện lắng nghe Enter
+document.getElementById("searchInput").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault(); // Ngăn hành vi mặc định
+        const keyword = event.target.value.trim().toLowerCase();
+        const notification = document.getElementById("notification");
+
+        // Tìm kiếm sản phẩm
+        const foundProduct = data.find(item =>
+            item.name.toLowerCase().includes(keyword)
+        );
+
+        if (foundProduct) {
+            // Chuyển hướng đến sản phẩm
+            window.location.href = foundProduct.url;
         } else {
-            suggestionsContainer.style.display = "none";
+            // Hiển thị thông báo lỗi
+            notification.style.display = "block"; // Đảm bảo hiển thị
+            notification.classList.add("active");
+
+            // Tự động ẩn thông báo sau 3 giây
+            setTimeout(() => {
+                notification.classList.remove("active");
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 500); // Chờ hiệu ứng kết thúc
+            }, 3000);
         }
-    } else {
-        suggestionsContainer.style.display = "none";
-    }
-}
-document.addEventListener("click", (e) => {
-    if (!e.target.closest(".search-container")) {
-        document.getElementById("suggestions").style.display = "none";
     }
 });
