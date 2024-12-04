@@ -1,9 +1,9 @@
 const data = [
-    { name: "Điều Ước", url: "/page/product/me/dieu-uoc.html" },
-    { name: "Hương Ngày Nắng", url: "/page/product/ban/huong-ngay-nang.html" },
-    { name: "My Princess", url: "/page/product/ny/my-princess.html" },
-    { name: "Peony", url: "/page/product/sang/peony.html" },
-    { name: "Simple", url: "/page/product/re/simple.html" }
+    { name: "Điều Ước", url: "page/product/me/dieu-uoc.html" },
+    { name: "Hương Ngày Nắng", url: "page/product/ban/huong-ngay-nang.html" },
+    { name: "My Princess", url: "page/product/ny/my-princess.html" },
+    { name: "Peony", url: "page/product/sang/peony.html" },
+    { name: "Simple", url: "page/product/re/simple.html" }
   ];
   document.getElementById("searchInput").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
