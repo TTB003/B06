@@ -60,20 +60,27 @@
         </ul>
     </div>
     <!-- Modal Popup -->
-<div id="adminPopup">
-    <div class="popup-overlay"></div>
-    <div class="popup-content">
-        <button class="close-popup" onclick="closePopup()">×</button>
-        <h2>Thông Tin Tài Khoản</h2>
-        <label for="username">Tên:</label>
-        <input type="text" id="username" value="Admin" disabled />
-
-        <label for="role">Vai trò:</label>
-        <input type="text" id="role" value="Quản trị viên" disabled />
-
-        <button class="submit-btn" onclick="logout()">Đăng xuất</button>
+    <div id="adminPopup">
+        <div class="popup-overlay"></div>
+        <div class="popup-content">
+            <!-- Nút đóng -->
+            <button class="close-popup"  onclick="closePopup()">×</button>
+            
+            <!-- Tiêu đề -->
+            <h2>Thông Tin Tài Khoản</h2>
+            
+            <!-- Thông tin tài khoản -->
+            <label for="username">Tên:</label>
+            <input type="text" id="username" value="Admin" disabled />
+    
+            <label for="role">Vai trò:</label>
+            <input type="text" id="role" value="Quản trị viên" disabled />
+    
+            <!-- Nút đăng xuất -->
+            <button class="submit-btn" onclick="logout()">Đăng xuất</button>
+        </div>
     </div>
-</div>
+    
 
 
 
@@ -100,6 +107,29 @@
                 <br><button type="button" class="btn-primary" onclick="showAddUserPopup()">Thêm Người Dùng</button>
             </section>
         </div>
+        <!-- Popup HTML -->
+<div id="userPopup" class="popup">
+    <div class="popup-content">
+        <span class="close"  onclick="closeUserPopup()">&times;</span>
+        <h2 id="popupTitle">Thêm Người Dùng</h2>
+        <form id="userForm">
+            <label for="username">Tên đăng nhập:</label>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="name">Họ và Tên:</label>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" required><br><br>
+            <label for="confirmPassword">Nhập lại mật khẩu:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
+            <button type="submit" class="btn-primary">Lưu</button>
+        </form>
+    </div>
+</div>
+
+        
+
         
             <!-- Quản lý Sản Phẩm -->
             <section id="product-management" class="section-box">

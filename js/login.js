@@ -77,6 +77,7 @@ function handleLogin() {
     }
 }
 
+
 // Đăng ký tài khoản mới
 function saveAccountData() {
     const name = document.getElementById('name').value;

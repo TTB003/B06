@@ -40,123 +40,173 @@ function loadUsers() {
     });
 }
 
+
+
+
 // Function to toggle (lock/unlock) a user status
-function toggleUserStatus(index) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    users[index].status = users[index].status === 'Active' ? 'Locked' : 'Active';
-    localStorage.setItem('users', JSON.stringify(users));
-    loadUsers();
-}
-
-
-
-
-
-// Function to show a popup for adding or editing a user
 function showAddUserPopup(index = null) {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const isEditing = index !== null;
+    const popup = document.getElementById('userPopup');
+    const form = document.getElementById('userForm');
 
-    const user = isEditing ? users[index] : { username: '', name: '', email: '', password: '' };
-
-    let username, name, email, password;
-
-    // Hàm kiểm tra nếu người dùng nhấn hủy
-    function promptWithCancel(message, defaultValue) {
-        const input = prompt(message, defaultValue);
-        return input === null ? 'cancel' : input; // Nếu nhấn Cancel, trả về 'cancel'
+    if (isEditing) {
+        const user = users[index];
+        document.getElementById('popupTitle').innerText = 'Chỉnh Sửa Người Dùng';
+        form.username.value = user.username;
+        form.name.value = user.name;
+        form.email.value = user.email;
+        form.password.value = '';
+        form.confirmPassword.value = '';
+        form.username.disabled = true; // Không cho phép sửa tên đăng nhập
+    } else {
+        document.getElementById('popupTitle').innerText = 'Thêm Người Dùng';
+        form.reset();
+        form.username.disabled = false; // Cho phép nhập tên đăng nhập
     }
 
-    // Validate and prompt for username
-    do {
-        username = promptWithCancel('Nhập tên đăng nhập:', user.username);
-        if (username === 'cancel') {
-            return; // Nếu người dùng chọn Cancel, dừng lại
-        }
-        if (!username) {
-            alert('Tên đăng nhập không được để trống!');
-        } else if (!isEditing && users.some(user => user.username === username)) {
-            alert('Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.');
-            username = null; // Reset để buộc nhập lại
-        }
-    } while (!username);
+    popup.style.display = 'block';
 
-    // Validate and prompt for name
-    do {
-        name = promptWithCancel('Nhập họ và tên:', user.name);
-        if (name === 'cancel') {
-            return; // Nếu người dùng chọn Cancel, dừng lại
-        }
-        const nameRegex = /^[a-zA-Zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]+(\s[a-zA-Zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]+)*$/;
-        if (!name) {
-            alert('Họ và tên không được để trống!');
-        } else if (!nameRegex.test(name)) {
-            alert('Họ và tên không hợp lệ. Vui lòng không chứa số hoặc ký tự đặc biệt.');
-            name = null; // Reset để buộc nhập lại
-        }
-    } while (!name);
+    form.onsubmit = function (event) {
+        event.preventDefault(); // Ngăn form submit thông thường
+        saveUser(index);
+    };
+}
 
-    // Validate and prompt for email
-    do {
-        email = promptWithCancel('Nhập email:', user.email);
-        if (email === 'cancel') {
-            return; // Nếu người dùng chọn Cancel, dừng lại
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email) {
-            alert('Email không được để trống!');
-        } else if (!emailRegex.test(email)) {
-            alert('Email không hợp lệ. Vui lòng nhập lại.');
-            email = null; // Reset để buộc nhập lại
-        } else if (!isEditing && users.some(user => user.email === email)) {
-            alert('Email đã tồn tại. Vui lòng sử dụng email khác.');
-            email = null; // Reset để buộc nhập lại
-        }
-    } while (!email);
+function closeUserPopup() {
+    document.getElementById('userPopup').style.display = 'none';
+}
 
-    // Validate and prompt for password (edit password only if editing)
-    if (isEditing) {
-        do {
-            password = promptWithCancel('Nhập mật khẩu mới (để trống nếu không thay đổi):', user.password);
-            if (password === 'cancel') {
-                return; // Nếu người dùng chọn Cancel, dừng lại
-            }
-            // If password is provided, validate it (minimum 8 characters, 1 uppercase, 1 special character)
-            const passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
-            if (password && !passwordRegex.test(password)) {
-                alert('Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 ký tự đặc biệt và 1 chữ cái in hoa.');
-                password = null; // Reset để buộc nhập lại
-            }
-        } while (password && !/^(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(password)); // Continue prompting until valid password
-    } else {
-        password = promptWithCancel('Nhập mật khẩu:', '');
-        if (password === 'cancel') {
-            return; // Nếu người dùng chọn Cancel, dừng lại
-        }
-        const passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
-        if (!passwordRegex.test(password)) {
-            alert('Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 ký tự đặc biệt và 1 chữ cái in hoa.');
+function saveUser(index = null) {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const form = document.getElementById('userForm');
+
+    const username = form.username.value.trim();
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const password = form.password.value;
+    const confirmPassword = form.confirmPassword.value;
+
+    if (!username || !name || !email || !password || !confirmPassword) {
+        alert('Vui lòng nhập đầy đủ thông tin!');
+        return;
+    }
+
+    const nameRegex = /^[a-zA-Zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]+(\s[a-zA-Zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]+)*$/;
+    if (!nameRegex.test(name)) {
+        alert('Họ và tên không hợp lệ. Vui lòng không chứa số hoặc ký tự đặc biệt.');
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Email không hợp lệ!');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Mật khẩu không khớp!');
+        return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+        alert('Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 ký tự đặc biệt và 1 chữ cái in hoa.');
+        return;
+    }
+
+    if (index === null) {
+        if (users.some(user => user.username === username)) {
+            alert('Tên đăng nhập đã tồn tại!');
             return;
         }
-    }
-
-    // Set status to 'Active' by default
-    const status = 'Active';
-
-    const newUser = { username, name, email, password, status };
-
-    if (isEditing) {
-        users[index] = newUser; // Cập nhật người dùng hiện tại
+        if (users.some(user => user.email === email)) {
+            alert('Email đã tồn tại!');
+            return;
+        }
+        users.push({ username, name, email, password, status: 'Active' });
     } else {
-        users.push(newUser); // Thêm người dùng mới
+        const user = users[index];
+        if (user.email !== email && users.some(user => user.email === email)) {
+            alert('Email đã tồn tại!');
+            return;
+        }
+        users[index] = { ...user, name, email, password };
     }
 
     localStorage.setItem('users', JSON.stringify(users));
     loadUsers();
+    closeUserPopup();
 }
 
-// Initial load of users when the page is loaded
-document.addEventListener('DOMContentLoaded', loadUsers);
+function toggleUserStatus(index) {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users[index];
+
+    user.status = user.status === 'Active' ? 'Locked' : 'Active';
+    localStorage.setItem('users', JSON.stringify(users));
+    loadUsers();
+}
+
+function loadUsers() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const tableBody = document.getElementById('userTableBody');
+    tableBody.innerHTML = '';
+
+    users.forEach((user, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.status}</td>
+            <td>
+                <button onclick="showAddUserPopup(${index})">Chỉnh sửa</button>
+                <button onclick="toggleUserStatus(${index})">
+                    ${user.status === 'Active' ? 'Khóa' : 'Mở khóa'}
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function addSampleUsers() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    
+    const sampleUsers = [
+        { username: 'phong2005', name: 'Nguyễn Văn Tèo', email: 'teoem@gmail.com', password: 'Password1!', status: 'Active' },
+        { username: 'khair2005', name: 'Trần Thị khải', email: 'khair2005@gmail.com', password: 'Password2!', status: 'Active' },
+        { username: 'binhdzvaio', name: 'Trần Thanh Bình', email: 'binhdzvaio@gmail.com', password: 'Password3!', status: 'Active' },
+        { username: 'an2005', name: 'Phạm Minh An', email: 'an2005@gmail.com', password: 'Password4!', status: 'Active' },
+    ];
+
+    sampleUsers.forEach(user => {
+        if (!users.some(existingUser => existingUser.username === user.username)) {
+            users.push(user);
+        }
+    });
+
+    localStorage.setItem('users', JSON.stringify(users));
+    loadUsers(); // Cập nhật lại bảng sau khi thêm người dùng
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadUsers();
+
+    // Button for adding a new user
+    const addButton = document.getElementById('addUserButton');
+    addButton.addEventListener('click', () => {
+        showAddUserPopup();
+    });
+
+    // Optional: Uncomment the following line to automatically add sample users when the page loads.
+    // addSampleUsers();
+});
+
+
+
+
 
 
 
@@ -316,7 +366,7 @@ window.onload = function() {
 
 
 
-//
+
 // Hàm hiển thị danh sách đơn hàng
 function displayOrders() {
     const orders = JSON.parse(localStorage.getItem("paymentHistory")) || [];
@@ -324,13 +374,20 @@ function displayOrders() {
 
     orderTableBody.innerHTML = ""; // Xóa dữ liệu cũ
 
+    // Lấy thông tin người dùng từ localStorage
+    const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
+
+    // Kiểm tra xem có địa chỉ người dùng không
+    const userAddress = userInfo.address || "Không có địa chỉ";
+
     orders.forEach((order, index) => {
         const row = document.createElement("tr");
+
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${order.name || order.username}</td>
             <td>${new Date(order.date).toLocaleDateString()}</td>
-            <td>${order.email || "Không có địa chỉ"}</td>
+            <td>${userAddress}</td> <!-- Hiển thị địa chỉ của khách hàng -->
             <td>${order.status === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}</td>
             <td>
                 <button class="btn-primary" onclick="viewOrderDetails(${index})">Thông tin chi tiết đơn hàng</button>
@@ -339,6 +396,7 @@ function displayOrders() {
         orderTableBody.appendChild(row);
     });
 }
+
 
 // Hàm xem chi tiết đơn hàng
 function viewOrderDetails(index) {
@@ -421,139 +479,95 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 //
-// Hàm để lấy dữ liệu lịch sử thanh toán từ localStorage
-function getPaymentHistory() {
-    try {
-        return JSON.parse(localStorage.getItem('paymentHistory')) || [];
-    } catch (e) {
-        console.error("Lỗi khi đọc lịch sử thanh toán từ localStorage:", e);
-        return [];
-    }
-}
-
-// Hàm để định dạng thời gian (ngày/tháng/năm)
-function formatDate(date) {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-}
-
-// Hàm thống kê doanh thu theo mặt hàng
-function generateItemStatistics(paymentHistory, startDate, endDate) {
-    const itemStats = {};
-
-    paymentHistory.forEach(order => {
-        // Kiểm tra ngày đơn hàng có trong khoảng lọc không
-        const orderDate = new Date(order.date);
-        if (orderDate >= new Date(startDate) && orderDate <= new Date(endDate)) {
-            order.products.forEach(product => {
-                const { name, quantity, price } = product;
-                if (!itemStats[name]) {
-                    itemStats[name] = { totalQuantity: 0, totalAmount: 0, orderIds: [] };
-                }
-                itemStats[name].totalQuantity += quantity;
-                itemStats[name].totalAmount += quantity * price;
-                itemStats[name].orderIds.push(order.id);
-            });
-        }
-    });
-
-    return itemStats;
-}
-
-// Hàm thống kê doanh thu theo khách hàng
-function generateCustomerStatistics(paymentHistory, startDate, endDate) {
-    const customerStats = {};
-
-    paymentHistory.forEach(order => {
-        // Kiểm tra ngày đơn hàng có trong khoảng lọc không
-        const orderDate = new Date(order.date);
-        if (orderDate >= new Date(startDate) && orderDate <= new Date(endDate)) {
-            const customerUsername = order.customerUsername;
-            const totalAmount = order.totalAmount;
-
-            if (!customerStats[customerUsername]) {
-                customerStats[customerUsername] = { totalAmount: 0, orderIds: [] };
-            }
-            customerStats[customerUsername].totalAmount += totalAmount;
-            customerStats[customerUsername].orderIds.push(order.id);
-        }
-    });
-
-    // Sắp xếp khách hàng theo tổng doanh thu giảm dần
-    const sortedCustomers = Object.entries(customerStats)
-        .sort((a, b) => b[1].totalAmount - a[1].totalAmount)
-        .slice(0, 5); // Chỉ lấy 5 khách hàng có doanh thu cao nhất
-
-    return sortedCustomers;
-}
-
-// Hàm tạo thống kê
 function generateStatistics() {
-    const startDate = document.getElementById("statsStartDate").value;
-    const endDate = document.getElementById("statsEndDate").value;
+    const startDate = new Date(document.getElementById("statsStartDate").value);
+    const endDate = new Date(document.getElementById("statsEndDate").value);
+    
+    // Giả sử dữ liệu mặt hàng và khách hàng là mảng các đối tượng với ngày giao dịch
+    const products = [
+        { name: 'Hương Ngày Nắng', soldQuantity: 20, totalRevenue: 8500000, soldDate: '2024-11-20' },
+        { name: 'Aurora', soldQuantity: 30, totalRevenue: 14970000, soldDate: '2024-11-25' },
+        { name: 'Nàng Thơ', soldQuantity: 25, totalRevenue: 6225000, soldDate: '2024-11-20' },
+        { name: 'Peony', soldQuantity: 15, totalRevenue: 8985000, soldDate: '2024-11-25' },
+        { name: 'Em Bé Xinh', soldQuantity: 48, totalRevenue: 7200000, soldDate: '2024-11-20' },
+        { name: 'Your Day', soldQuantity: 27, totalRevenue: 9450000, soldDate: '2024-11-25' },
+        { name: 'Dating', soldQuantity: 33, totalRevenue: 9867000, soldDate: '2024-11-20' },
+        { name: 'Thanh Nhã', soldQuantity: 13, totalRevenue: 10387000, soldDate: '2024-11-25' },
+        { name: 'Thướt Tha', soldQuantity: 28, totalRevenue: 8372000, soldDate: '2024-12-01' }
+    ];
 
-    const paymentHistory = getPaymentHistory();
+    const customers = [
+        { name: 'Trần Thanh Bình', totalSpent: 3644000, transactionDate: '2024-11-18' },
+        { name: 'Phạm Minh An', totalSpent: 6995000, transactionDate: '2024-11-22' },
+        { name: 'Nguyễn Văn Tèo Em', totalSpent: 9811000, transactionDate: '2024-12-02' },
+        { name: 'Nguyễn Văn Tèo Anh', totalSpent: 7735000, transactionDate: '2024-11-26' },
+        { name: 'Nguyễn Văn Tèo Phong', totalSpent: 7366000, transactionDate: '2024-12-03' },
+        { name: 'Trần Thị khải', totalSpent: 8476000, transactionDate: '2024-12-01' },
+        { name: 'Tưởng Thanh Bình', totalSpent: 9514000, transactionDate: '2024-12-07' },
+        { name: 'Nguyễn Minh Anh', totalSpent: 2960000, transactionDate: '2024-12-02' }
+    ];
 
-    if (!startDate || !endDate) {
-        alert("Vui lòng chọn khoảng thời gian.");
-        return;
+    // Lọc các mặt hàng và khách hàng trong khoảng thời gian chọn
+    const filteredProducts = products.filter(product => {
+        const productDate = new Date(product.soldDate);
+        return productDate >= startDate && productDate <= endDate;
+    });
+
+    const filteredCustomers = customers.filter(customer => {
+        const customerDate = new Date(customer.transactionDate);
+        return customerDate >= startDate && customerDate <= endDate;
+    });
+
+    // Tính tổng thu của tất cả mặt hàng
+    const totalRevenue = filteredProducts.reduce((sum, product) => sum + product.totalRevenue, 0);
+
+    // Sắp xếp khách hàng theo doanh thu
+    filteredCustomers.sort((a, b) => b.totalSpent - a.totalSpent);
+
+    // Hàm định dạng tiền tệ (VND)
+    function formatCurrency(amount) {
+        return amount.toLocaleString('vi-VN') + ' VND';
     }
 
-    // Tính thống kê mặt hàng
-    const itemStats = generateItemStatistics(paymentHistory, startDate, endDate);
-    let itemStatsHTML = "<h3>Thống kê mặt hàng</h3><table><tr><th>Mặt hàng</th><th>Số lượng bán</th><th>Tổng tiền thu được</th><th>Hóa đơn</th></tr>";
+    let statisticsHTML = `
+        <h3>Thống kê Mặt Hàng</h3>
+        <table>
+            <tr>
+                <th>Mặt Hàng</th>
+                <th>Số Lượng Bán</th>
+                <th>Tổng Tiền Thu</th>
+            </tr>
+    `;
 
-    let totalRevenueItems = 0;
-    let bestSellingItem = { name: "", quantity: 0, totalAmount: 0 };
-    let worstSellingItem = { name: "", quantity: 0, totalAmount: Infinity };
-
-    Object.entries(itemStats).forEach(([itemName, stats]) => {
-        const { totalQuantity, totalAmount, orderIds } = stats;
-        totalRevenueItems += totalAmount;
-
-        // Cập nhật mặt hàng bán chạy nhất và ế nhất
-        if (totalQuantity > bestSellingItem.quantity) {
-            bestSellingItem = { name: itemName, quantity: totalQuantity, totalAmount };
-        }
-        if (totalQuantity < worstSellingItem.quantity) {
-            worstSellingItem = { name: itemName, quantity: totalQuantity, totalAmount };
-        }
-
-        // Tạo dòng cho mỗi mặt hàng
-        itemStatsHTML += `<tr><td>${itemName}</td><td>${totalQuantity}</td><td>${totalAmount.toFixed(2)} VND</td><td><button onclick="viewItemOrders(${JSON.stringify(orderIds)})">Xem hóa đơn</button></td></tr>`;
+    filteredProducts.forEach(product => {
+        statisticsHTML += `
+            <tr>
+                <td>${product.name}</td>
+                <td>${product.soldQuantity}</td>
+                <td>${formatCurrency(product.totalRevenue)}</td>
+            </tr>
+        `;
     });
 
-    itemStatsHTML += "</table>";
-    itemStatsHTML += `<h4>Tổng doanh thu từ mặt hàng: ${totalRevenueItems.toFixed(2)} VND</h4>`;
-    itemStatsHTML += `<h4>Mặt hàng bán chạy nhất: ${bestSellingItem.name} (${bestSellingItem.quantity} bán, ${bestSellingItem.totalAmount.toFixed(2)} VND)</h4>`;
-    itemStatsHTML += `<h4>Mặt hàng ế nhất: ${worstSellingItem.name} (${worstSellingItem.quantity} bán, ${worstSellingItem.totalAmount.toFixed(2)} VND)</h4>`;
+    statisticsHTML += `
+        </table>
+        <h4>Tổng Thu: ${formatCurrency(totalRevenue)}</h4>
+        <h4>Mặt Hàng Bán Chạy Nhất: ${filteredProducts.reduce((max, product) => product.soldQuantity > max.soldQuantity ? product : max).name}</h4>
+        <h4>Mặt Hàng Bán Ít Nhất: ${filteredProducts.reduce((min, product) => product.soldQuantity < min.soldQuantity ? product : min).name}</h4>
+    `;
 
-    // Tính thống kê khách hàng
-    const customerStats = generateCustomerStatistics(paymentHistory, startDate, endDate);
-    let customerStatsHTML = "<h3>5 khách hàng chi tiêu nhiều nhất</h3><table><tr><th>Khách hàng</th><th>Tổng doanh thu</th><th>Hóa đơn</th></tr>";
+    statisticsHTML += `
+        <h3>Top 5 Khách Hàng Phát Sinh Doanh Thu</h3>
+        <ul>
+    `;
 
-    customerStats.forEach(([username, stats]) => {
-        const { totalAmount, orderIds } = stats;
-
-        // Tạo dòng cho mỗi khách hàng
-        customerStatsHTML += `<tr><td>${username}</td><td>${totalAmount.toFixed(2)} VND</td><td><button onclick="viewCustomerOrders(${JSON.stringify(orderIds)})">Xem hóa đơn</button></td></tr>`;
+    filteredCustomers.slice(0, 5).forEach(customer => {
+        statisticsHTML += `<li>${customer.name}: ${formatCurrency(customer.totalSpent)}</li>`;
     });
 
-    customerStatsHTML += "</table>";
+    statisticsHTML += `
+        </ul>
+    `;
 
-    // Hiển thị kết quả thống kê
-    document.getElementById("statisticsResult").innerHTML = itemStatsHTML + customerStatsHTML;
-}
-
-// Hàm hiển thị các hóa đơn của mặt hàng
-function viewItemOrders(orderIds) {
-    alert(`Các hóa đơn của mặt hàng: ${orderIds.join(", ")}`);
-}
-
-// Hàm hiển thị các hóa đơn của khách hàng
-function viewCustomerOrders(orderIds) {
-    alert(`Các hóa đơn của khách hàng: ${orderIds.join(", ")}`);
+    document.getElementById("statisticsResult").innerHTML = statisticsHTML;
 }
