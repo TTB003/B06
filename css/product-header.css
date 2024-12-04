@@ -81,6 +81,7 @@ body {
     cursor: pointer;
     width: 20px;
     height: 15px;
+    padding-bottom:10px;
 }
 
 #suggestions {
