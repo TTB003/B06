@@ -171,6 +171,25 @@ function loadUsers() {
     });
 }
 
+function addSampleUsers() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    
+    const sampleUsers = [
+        { username: 'phong2005', name: 'Nguyễn Văn Tèo', email: 'teoem@gmail.com', password: 'Password1!', status: 'Active' },
+        { username: 'khair2005', name: 'Trần Thị khải', email: 'khair2005@gmail.com', password: 'Password2!', status: 'Active' },
+        { username: 'binhdzvaio', name: 'Trần Thanh Bình', email: 'binhdzvaio@gmail.com', password: 'Password3!', status: 'Active' },
+        { username: 'an2005', name: 'Phạm Minh An', email: 'an2005@gmail.com', password: 'Password4!', status: 'Active' },
+    ];
+
+    sampleUsers.forEach(user => {
+        if (!users.some(existingUser => existingUser.username === user.username)) {
+            users.push(user);
+        }
+    });
+
+    localStorage.setItem('users', JSON.stringify(users));
+    loadUsers(); // Cập nhật lại bảng sau khi thêm người dùng
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
