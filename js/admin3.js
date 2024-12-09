@@ -53,14 +53,6 @@ if (storedUsers.length === 0) {
     localStorage.setItem('users', JSON.stringify(users));
 }
 
-
-
-// Kiểm tra xem giỏ hàng đã có trong localStorage chưa
-const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-if (storedCart.length === 0) {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
 // Dữ liệu ví dụ về lịch sử thanh toán
 const paymentHistory = [
     {
@@ -161,53 +153,10 @@ function viewOrderDetails(index) {
             Ngày thanh toán: ${new Date(order.date).toLocaleString()}
             Sản phẩm: ${order.products.split(", ").join(", ")}
             Tổng tiền: ${order.totalAmount.toLocaleString()} VND
-            Trạng thái: ${order.status === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
-        `;
+            Trạng thái: ${order.status === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}`;
         alert(orderDetails);  // Hoặc bạn có thể hiển thị trong một modal hoặc phần riêng
     } else {
         alert("Không tìm thấy đơn hàng.");
-    }
-}
-
-// Hàm xử lý thanh toán
-function payAll() {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo) {
-        alert("Vui lòng đăng nhập để thực hiện thanh toán.");
-        return;
-    }
-
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    if (cart.length === 0) {
-        alert("Giỏ hàng trống. Vui lòng thêm sản phẩm!");
-        return;
-    }
-
-    if (confirm("Bạn có chắc chắn muốn thanh toán?")) {
-        // Lấy lịch sử thanh toán từ localStorage
-        let paymentHistory = JSON.parse(localStorage.getItem("paymentHistory")) || [];
-
-        // Thêm thông tin thanh toán vào lịch sử
-        const customerHistory = {
-            username: userInfo.username, // Tên tài khoản khách hàng
-            name: userInfo.name, // Tên đầy đủ của khách hàng (nếu có)
-            email: userInfo.email, // Email khách hàng (nếu có)
-            date: new Date().toISOString(),
-            products: cart.map(item => item.name).join(", "),
-            totalAmount: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-            status: "paid" // Trạng thái của đơn hàng là "paid"
-        };
-
-        paymentHistory.push(customerHistory);
-        localStorage.setItem("paymentHistory", JSON.stringify(paymentHistory));
-
-        // Xóa giỏ hàng sau khi thanh toán
-        localStorage.removeItem("cart");
-
-        alert("Thanh toán thành công!");
-
-        // Hiển thị lại giỏ hàng và lịch sử thanh toán
-        displayOrders();
     }
 }
 
