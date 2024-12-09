@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Account</title>
+    <link rel="stylesheet" href="../css/Style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>
+    main {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+main .sidebar {
+    width: 250px;
+    background-color: #FFB6C1;
+    color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-right: 20px;
+}
+
+main .sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+main .sidebar ul li {
+    margin: 10px 0;
+}
+
+main .sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: block;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+main .sidebar ul li a:hover {
+    background-color: #FFB6C1;
+}
+
+main .main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main .main-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+h1 {
+        text-align: center; /* Căn giữa tiêu đề */
+    }
+
+
+   
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="https://www.sgu.edu.vn/"><img src="../images/SGU-LOGO.png" style="width: 60px; height: 60px;" class="social-icons"></a>
+            <div class="hotline">HOTLINE: (028)38305570</div>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/profile.php?id=100009526723686">
+                    <img src="../images/FB_icon.jpg" alt="Facebook Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100089018237035">
+                    <img src="../images/Instagram_icon.png" alt="Instagram Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/dtp.clo">
+                    <img src="../images/Telegram_icon.png" alt="Telegram Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100036720456189">
+                    <img src="../images/X_icon.png" alt="X Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/vinhthieu.nguyen.982">
+                    <img src="../images/whatsapp_icon.png" alt="WhatsApp Icon" style="width: 20px; height: 20px;">
+                </a>
+            </div>
+        </div>
+        <div>
+            <a class="center" href="#"><img src="../images/FlowerShop.png" alt="Logo"></a>
+        </div>
+        <div class="header-right">
+            <a href="#" onclick="openPopup()">Tài Khoản</a>
+            <a href="#" class="cart">
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                Giỏ hàng
+            </a>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="showSuggestions()">
+                <img src="../images/search-icon.png" alt="Search Icon" id="searchIcon" class="search-icon">
+                <div id="suggestions"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <ul>
+            <li><a href="#">Trang Chính</a></li>
+            <li><a href="#">Hoa tặng sinh nhật mẹ</a></li>
+            <li><a href="#">Hoa tặng sinh nhật bạn</a></li>
+            <li><a href="#">Hoa tặng sinh nhật người yêu ~ bạn gái</a></li>
+            <li><a href="#">Hoa sinh nhật sang trọng</a></li>
+            <li><a href="#">Hoa sinh nhật giá rẻ</a></li>
+        </ul>
+    </div>
+    <!-- Modal Popup -->
+    <div id="adminPopup">
+        <div class="popup-overlay"></div>
+        <div class="popup-content">
+            <!-- Nút đóng -->
+            <button class="close-popup"  onclick="closePopup()">×</button>
+            
+            <!-- Tiêu đề -->
+            <h2>Thông Tin Tài Khoản</h2>
+            
+            <!-- Thông tin tài khoản -->
+            <label for="username">Tên:</label>
+            <input type="text" id="username" value="Admin" disabled />
+    
+            <label for="role">Vai trò:</label>
+            <input type="text" id="role" value="Quản trị viên" disabled />
+    
+            <!-- Nút đăng xuất -->
+            <button class="submit-btn" onclick="logout()">Đăng xuất</button>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <h1>Chào mừng đến với hệ thống quản lý Admin</h1>
+    <main>
+        <aside class="sidebar">
+            <ul>
+                <li><a href="admin1.html">Quản Lý Người Dùng</a></li>
+                <li><a href="admin2.html">Quản Lý Sản Phẩm</a></li>
+                <li><a href="admin3.html">Quản Lý Đơn Hàng</a></li>
+                <li><a href="admin4.html">Thống Kê Kinh Doanh</a></li>
+            </ul>
+        </aside>
+        <section class="main-content">
+            <img src="../images/banner.jpg" alt="Admin Dashboard" class="dashboard-image">
+        </section>
+        
+    </main>
+    

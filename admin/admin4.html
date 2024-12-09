@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Account</title>
+    <link rel="stylesheet" href="../css/Style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>   
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="https://www.sgu.edu.vn/"><img src="../images/SGU-LOGO.png" style="width: 60px; height: 60px;" class="social-icons"></a>
+            <div class="hotline">HOTLINE: (028)38305570</div>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/profile.php?id=100009526723686">
+                    <img src="../images/FB_icon.jpg" alt="Facebook Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100089018237035">
+                    <img src="../images/Instagram_icon.png" alt="Instagram Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/dtp.clo">
+                    <img src="../images/Telegram_icon.png" alt="Telegram Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100036720456189">
+                    <img src="../images/X_icon.png" alt="X Icon" style="width: 20px; height: 20px;">
+                </a>
+                <a href="https://www.facebook.com/vinhthieu.nguyen.982">
+                    <img src="../images/whatsapp_icon.png" alt="WhatsApp Icon" style="width: 20px; height: 20px;">
+                </a>
+            </div>
+        </div>
+        <div>
+            <a class="center" href="#"><img src="../images/FlowerShop.png" alt="Logo"></a>
+        </div>
+        <div class="header-right">
+            <a href="#" onclick="openPopup()">Tài Khoản</a>
+            <a href="#" class="cart">
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                Giỏ hàng
+            </a>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="showSuggestions()">
+                <img src="../images/search-icon.png" alt="Search Icon" id="searchIcon" class="search-icon">
+                <div id="suggestions"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <ul>
+            <li><a href="#">Trang Chính</a></li>
+            <li><a href="#">Hoa tặng sinh nhật mẹ</a></li>
+            <li><a href="#">Hoa tặng sinh nhật bạn</a></li>
+            <li><a href="#">Hoa tặng sinh nhật người yêu ~ bạn gái</a></li>
+            <li><a href="#">Hoa sinh nhật sang trọng</a></li>
+            <li><a href="#">Hoa sinh nhật giá rẻ</a></li>
+        </ul>
+    </div>
+    <!-- Modal Popup -->
+    <div id="adminPopup">
+        <div class="popup-overlay"></div>
+        <div class="popup-content">
+            <!-- Nút đóng -->
+            <button class="close-popup"  onclick="closePopup()">×</button>
+            
+            <!-- Tiêu đề -->
+            <h2>Thông Tin Tài Khoản</h2>
+            
+            <!-- Thông tin tài khoản -->
+            <label for="username">Tên:</label>
+            <input type="text" id="username" value="Admin" disabled />
+    
+            <label for="role">Vai trò:</label>
+            <input type="text" id="role" value="Quản trị viên" disabled />
+    
+            <!-- Nút đăng xuất -->
+            <button class="submit-btn" onclick="logout()">Đăng xuất</button>
+        </div>
+    </div>
+    
+    <main>
+        <!-- Thống kê Kinh Doanh -->
+        <section id="business-statistics" class="section-box">
+            <h2>Thống Kê Kinh Doanh</h2>
+            <form id="statisticsForm" class="filter-form">
+                <div class="form-group">
+                    <label for="statsStartDate">Từ ngày:</label>
+                    <input type="date" id="statsStartDate" />
+                </div>
+                <div class="form-group">
+                    <label for="statsEndDate">Đến ngày:</label>
+                    <input type="date" id="statsEndDate" />
+                </div>
+                <button class="btn-primary" type="button" onclick="generateStatistics()">Thống kê</button>
+            </form>
+            <div id="statisticsResult">
+                <!-- Kết quả thống kê sẽ được hiển thị ở đây -->
+            </div>
+        </section>
+    </div>
+    </main>
+    <script src="../js/admin4.js"></script>
+</body>
+</html>
